@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Inbox · TreeQuest{% endblock %}
+{% block content %}
+<p class="eyebrow">PLAYER PORTAL</p>
+<h1>✉ My Inbox</h1>
+<p class="muted">Messages and planting confirmations from the partner organization appear here.</p>
+{% if messages %}
+  {% for item in messages %}
+    <section class="panel inbox-message">
+      <div class="heading-row"><h2>🌳 {{ item.tree_name }}</h2><span class="status planted">Planted</span></div>
+      <p><strong>Planting area:</strong> {{ item.location }}</p>
+      <p><strong>Request date:</strong> {{ item.created_at }}</p>
+      {% if item.photo_filename %}
+        <img class="proof-photo" src="{{ url_for('static', filename='uploads/' + item.photo_filename) }}" alt="Photo uploaded by the partner organization">
+      {% endif %}
+      <p>{{ item.organization_note or "Your tree has been marked as planted. Thank you for helping the planet!" }}</p>
+    </section>
+  {% endfor %}
+{% else %}
+  <section class="panel empty"><div class="big-icon">📭</div><h2>No confirmations yet</h2><p>When the organization uploads a planting photo, it will appear here.</p></section>
+{% endif %}
+{% endblock %}

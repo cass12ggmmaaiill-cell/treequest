@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Organization Portal · TreeQuest{% endblock %}
+{% block content %}
+<p class="eyebrow">PARTNER ORGANIZATION PORTAL</p>
+<h1>Planting requests</h1>
+<p class="muted">Review requests from TreeQuest players, then upload a photo when planting is complete.</p>
+{% if requests %}
+  <div class="request-list">
+  {% for item in requests %}
+    <section class="panel org-request">
+      <div class="heading-row">
+        <div><p class="eyebrow">REQUEST #{{ item.id }}</p><h2>🌳 {{ item.tree_name }}</h2></div>
+        <span class="status {{ item.status|lower }}">{{ item.status }}</span>
+      </div>
+      <p><strong>Player:</strong> {{ item.username }}</p>
+      <p><strong>Planting area:</strong> {{ item.location }}</p>
+      <p><strong>Requested:</strong> {{ item.created_at }}</p>
+      {% if item.status == 'Pending' %}
+        <form method="post" action="{{ url_for('accept_request', request_id=item.id) }}">
+          <button class="secondary" type="submit">Accept request</button>
+        </form>
+      {% endif %}
+      {% if item.status != 'Planted' %}
+        <form class="upload-form" method="post" enctype="multipart/form-data" action="{{ url_for('mark_planted', request_id=item.id) }}">
+          <label>Upload planting photo</label>
+          <input type="file" name="photo" accept="image/png,image/jpeg,image/gif,image/webp" required>
+          <label>Message to player (optional)</label>
+          <textarea name="note" placeholder="Your tree has been planted. Thank you for helping the planet!"></textarea>
+          <button class="primary" type="submit">Send planting confirmation</button>
+        </form>
+      {% else %}
+        <p class="success-text">✓ Confirmation sent to {{ item.username }}'s inbox.</p>
+        {% if item.photo_filename %}<img class="proof-photo" src="{{ url_for('static', filename='uploads/' + item.photo_filename) }}" alt="Planting confirmation photo">{% endif %}
+        {% if item.organization_note %}<p>{{ item.organization_note }}</p>{% endif %}
+      {% endif %}
+    </section>
+  {% endfor %}
+  </div>
+{% else %}
+  <section class="panel"><p>No planting requests have arrived yet. New player redemptions will appear here.</p></section>
+{% endif %}
+{% endblock %}

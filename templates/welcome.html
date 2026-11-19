@@ -1,0 +1,184 @@
+
+{% extends "base.html" %}
+{% block title %}Welcome to TreeQuest{% endblock %}
+
+{% block content %}
+
+<style>
+.welcome-page {
+    min-height: 80vh;
+    background: #f8f5e8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 15px;
+}
+
+.welcome-card {
+    width: 100%;
+    max-width: 1000px;
+    min-height: 520px;
+    background: #fffdf4;
+    border: 3px solid #536b43;
+    border-radius: 30px;
+    display: flex;
+    flex-wrap: wrap;
+    overflow: hidden;
+    box-shadow: 9px 9px 0px #c6cba9;
+}
+
+.welcome-art {
+    flex: 1.2;
+    min-width: 280px;
+    background: #dce8c8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 30px;
+    text-align: center;
+}
+
+.big-tree {
+    font-size: 180px;
+    line-height: 1.3;
+    filter: drop-shadow(3px 5px 2px #9aaa7d);
+}
+
+.tree-caption {
+    color: #536b43;
+    font-family: Georgia, serif;
+    font-style: italic;
+    font-size: 17px;
+    margin-top: 10px;
+}
+
+.welcome-content {
+    flex: 1;
+    min-width: 280px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 35px 25px;
+}
+
+.welcome-title {
+    font-family: "Brush Script MT", "Segoe Script", cursive;
+    font-size: 55px;
+    color: #496b38;
+    line-height: 1.2;
+    margin-bottom: 15px;
+}
+
+.welcome-description {
+    color: #777;
+    font-family: Georgia, serif;
+    font-size: 16px;
+    line-height: 1.7;
+    max-width: 300px;
+}
+
+.start-button {
+    margin-top: 35px;
+    width: 145px;
+    height: 145px;
+    border-radius: 50%;
+    border: 4px solid #d68d9c;
+    background: #f1b9c4;
+    color: #69434d;
+    font-family: Georgia, serif;
+    font-size: 25px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 5px 6px 0px #d9a1a9;
+    transition: 0.25s;
+}
+
+.start-button:hover {
+    transform: scale(1.08);
+    background: #f5aeba;
+}
+
+.flower-decoration {
+    font-size: 28px;
+    margin-top: 25px;
+}
+
+.check-trees {
+    margin-top: 30px;
+    color: #536b43;
+    text-decoration: none;
+    font-family: Georgia, serif;
+    border-bottom: 1px dashed #82936b;
+    padding-bottom: 4px;
+}
+
+.check-trees:hover {
+    color: #263e24;
+}
+
+@media (max-width: 600px) {
+    .big-tree {
+        font-size: 120px;
+    }
+
+    .welcome-title {
+        font-size: 43px;
+    }
+
+    .start-button {
+        width: 125px;
+        height: 125px;
+    }
+}
+</style>
+
+<div class="welcome-page">
+    <div class="welcome-card">
+
+        <div class="welcome-art">
+            <div class="big-tree">🌳</div>
+
+            <p class="tree-caption">
+                Grow something beautiful.
+            </p>
+
+            <div style="font-size:30px; margin-top:15px;">
+                🌼 🍃 🌷
+            </div>
+        </div>
+
+        <div class="welcome-content">
+
+            <h1 class="welcome-title">
+                Welcome to<br>TreeQuest!
+            </h1>
+
+            <p class="welcome-description">
+                Every game, every point, and every little action
+                helps us build a greener future.
+            </p>
+
+            <a href="{{ url_for('player_start') }}">
+                <button class="start-button" type="button">
+                    START
+                </button>
+            </a>
+
+            <div class="flower-decoration">
+                🌸 🌿 🌸
+            </div>
+
+            <a href="{{ url_for('player_dashboard') }}"
+               class="check-trees">
+                Check My Trees →
+            </a>
+
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

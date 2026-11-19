@@ -1,0 +1,378 @@
+
+{% extends "base.html" %}
+{% block title %}Player Dashboard · TreeQuest{% endblock %}
+
+{% block content %}
+
+<div class="heading-row">
+  <div>
+    <p class="eyebrow">PLAYER PORTAL</p>
+    <h1>Welcome, {{ player.username }}!</h1>
+  </div>
+
+  <a class="button secondary" href="{{ url_for('inbox') }}">
+    ✉ Inbox{% if unread %} ({{ unread }}){% endif %}
+  </a>
+</div>
+
+<!-- PLAYER POINTS -->
+<section class="points-card">
+  <div>
+    <p class="eyebrow light">YOUR POINTS</p>
+    <div class="points">{{ player.points }}</div>
+    <p>100 points = 1 tree redemption</p>
+  </div>
+  <div class="tree-mark">🌳</div>
+</section>
+
+<div class="grid two">
+
+  <!-- CATCH THE LEAVES GAME -->
+  <section class="panel">
+    <h2>🍃 Catch the Leaves</h2>
+    <p>Catch as many falling leaves as possible in 30 seconds!</p>
+
+    <style>
+      #leaf-game {
+        position: relative;
+        height: 300px;
+        background: #e7f5df;
+        border: 2px solid #a5c995;
+        border-radius: 14px;
+        overflow: hidden;
+        margin: 15px 0;
+        user-select: none;
+        touch-action: none;
+      }
+
+      #leaf-basket {
+        position: absolute;
+        bottom: 5px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 42px;
+        width: 65px;
+        text-align: center;
+      }
+
+      .falling-leaf {
+        position: absolute;
+        top: 0;
+        font-size: 27px;
+        pointer-events: none;
+      }
+
+      #leaf-info {
+        display: flex;
+        justify-content: space-between;
+        font-weight: bold;
+        margin: 10px 0;
+      }
+
+      #leaf-message {
+        font-weight: bold;
+        min-height: 24px;
+        margin: 10px 0;
+      }
+
+      #leaf-claim {
+        margin-top: 10px;
+      }
+    </style>
+
+    <div id="leaf-info">
+      <span>🍃 Score: <span id="leaf-score">0</span></span>
+      <span>⏱ Time: <span id="leaf-time">30</span>s</span>
+    </div>
+
+    <div id="leaf-game">
+      <div id="leaf-basket">🧺</div>
+    </div>
+
+    <p id="leaf-message">
+      Press Start Game when you're ready!
+    </p>
+
+    <button type="button" class="primary" id="leaf-start">
+      Start Game
+    </button>
+
+    <form method="post"
+          action="{{ url_for('play') }}"
+          id="leaf-claim"
+          style="display:none;">
+
+      <button type="submit" class="primary">
+        Claim 20 TreeQuest Points!
+      </button>
+    </form>
+
+    <p class="small muted">
+      Move using the LEFT and RIGHT arrow keys, A and D keys,
+      or your mouse.
+    </p>
+
+    <script>
+      const game = document.getElementById("leaf-game");
+      const basket = document.getElementById("leaf-basket");
+      const scoreText = document.getElementById("leaf-score");
+      const timeText = document.getElementById("leaf-time");
+      const message = document.getElementById("leaf-message");
+      const startButton = document.getElementById("leaf-start");
+      const claimForm = document.getElementById("leaf-claim");
+
+      let score = 0;
+      let time = 30;
+      let running = false;
+      let basketX = 0;
+      let leaves = [];
+      let keys = {};
+      let spawnTimer;
+      let countdown;
+      let animation;
+
+      function moveBasket(x) {
+        const max = game.clientWidth - basket.offsetWidth;
+
+        basketX = Math.max(0, Math.min(x, max));
+
+        basket.style.left = basketX + "px";
+        basket.style.transform = "none";
+      }
+
+      function startGame() {
+        if (running) return;
+
+        score = 0;
+        time = 30;
+        leaves = [];
+        running = true;
+
+        game.querySelectorAll(".falling-leaf").forEach(leaf => {
+          leaf.remove();
+        });
+
+        scoreText.textContent = score;
+        timeText.textContent = time;
+
+        message.textContent = "Catch those leaves!";
+        startButton.style.display = "none";
+        claimForm.style.display = "none";
+
+        moveBasket((game.clientWidth - basket.offsetWidth) / 2);
+
+        spawnTimer = setInterval(createLeaf, 650);
+
+        countdown = setInterval(() => {
+          time--;
+          timeText.textContent = time;
+
+          if (time <= 0) {
+            endGame();
+          }
+        }, 1000);
+
+        animation = requestAnimationFrame(updateGame);
+      }
+
+      function createLeaf() {
+        if (!running) return;
+
+        const leaf = document.createElement("div");
+
+        leaf.className = "falling-leaf";
+
+        leaf.textContent = ["🍃", "🍂", "🌿"][
+          Math.floor(Math.random() * 3)
+        ];
+
+        const x = Math.random() * (game.clientWidth - 30);
+
+        leaf.style.left = x + "px";
+        game.appendChild(leaf);
+
+        leaves.push({
+          element: leaf,
+          x: x,
+          y: 0,
+          speed: 2 + Math.random() * 2,
+          caught: false
+        });
+      }
+
+      function updateGame() {
+        if (!running) return;
+
+        if (keys["ArrowLeft"] || keys["a"] || keys["A"]) {
+          moveBasket(basketX - 6);
+        }
+
+        if (keys["ArrowRight"] || keys["d"] || keys["D"]) {
+          moveBasket(basketX + 6);
+        }
+
+        const basketRect = basket.getBoundingClientRect();
+
+        leaves.forEach(leaf => {
+          leaf.y += leaf.speed;
+          leaf.element.style.top = leaf.y + "px";
+
+          const leafRect = leaf.element.getBoundingClientRect();
+
+          if (
+            leafRect.bottom >= basketRect.top &&
+            leafRect.top <= basketRect.bottom &&
+            leafRect.right >= basketRect.left &&
+            leafRect.left <= basketRect.right
+          ) {
+            score++;
+            scoreText.textContent = score;
+
+            leaf.caught = true;
+            leaf.element.remove();
+          }
+        });
+
+        leaves = leaves.filter(leaf => {
+          if (leaf.caught || leaf.y > game.clientHeight) {
+            leaf.element.remove();
+            return false;
+          }
+
+          return true;
+        });
+
+        animation = requestAnimationFrame(updateGame);
+      }
+
+      function endGame() {
+        running = false;
+
+        clearInterval(spawnTimer);
+        clearInterval(countdown);
+        cancelAnimationFrame(animation);
+
+        leaves.forEach(leaf => leaf.element.remove());
+        leaves = [];
+
+        if (score >= 5) {
+          message.textContent =
+            "🎉 Great job! You caught " + score +
+            " leaves! You earned 20 points!";
+
+          claimForm.style.display = "block";
+
+        } else {
+          message.textContent =
+            "You caught " + score +
+            " leaves. Catch at least 5 to earn your points!";
+
+          startButton.textContent = "Try Again";
+          startButton.style.display = "inline-block";
+        }
+      }
+
+      startButton.addEventListener("click", startGame);
+
+      document.addEventListener("keydown", event => {
+        if (["ArrowLeft", "ArrowRight"].includes(event.key)) {
+          event.preventDefault();
+        }
+
+        keys[event.key] = true;
+      });
+
+      document.addEventListener("keyup", event => {
+        keys[event.key] = false;
+      });
+
+      game.addEventListener("mousemove", event => {
+        if (!running) return;
+
+        const rect = game.getBoundingClientRect();
+
+        moveBasket(
+          event.clientX - rect.left - basket.offsetWidth / 2
+        );
+      });
+
+      game.addEventListener("touchmove", event => {
+        if (!running) return;
+
+        event.preventDefault();
+
+        const rect = game.getBoundingClientRect();
+
+        moveBasket(
+          event.touches[0].clientX -
+          rect.left -
+          basket.offsetWidth / 2
+        );
+      }, { passive: false });
+
+    </script>
+  </section>
+
+  <!-- TREE REDEMPTION -->
+  <section class="panel">
+    <h2>🌱 Redeem a tree</h2>
+
+    <p>
+      Use 100 points to send a planting request
+      to the partner organization.
+    </p>
+
+    <form method="post" action="{{ url_for('redeem') }}">
+      <button class="primary"
+        type="submit"
+        {% if player.points < points_required %}disabled{% endif %}>
+        Redeem 100 points
+      </button>
+    </form>
+
+    {% if player.points < points_required %}
+      <p class="small muted">
+        You need {{ points_required - player.points }} more points.
+      </p>
+    {% endif %}
+  </section>
+
+</div>
+
+<!-- TREE REQUESTS -->
+<section class="panel">
+  <div class="heading-row">
+    <h2>My tree requests</h2>
+    <a href="{{ url_for('inbox') }}">Open inbox →</a>
+  </div>
+
+  {% if requests %}
+    <div class="request-list">
+
+      {% for item in requests %}
+        <article class="request">
+
+          <div>
+            <strong>🌳 {{ item.tree_name }}</strong>
+            <p>{{ item.location }} · {{ item.created_at }}</p>
+          </div>
+
+          <span class="status {{ item.status|lower }}">
+            {{ item.status }}
+          </span>
+
+          {% if item.status == 'Planted' %}
+            <a href="{{ url_for('inbox') }}">View photo</a>
+          {% endif %}
+
+        </article>
+      {% endfor %}
+
+    </div>
+
+  {% else %}
+    <p class="muted">You have not redeemed a tree yet.</p>
+  {% endif %}
+</section>
+
+{% endblock %}

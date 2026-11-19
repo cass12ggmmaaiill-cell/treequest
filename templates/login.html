@@ -1,0 +1,184 @@
+
+{% extends "base.html" %}
+{% block title %}Login · TreeQuest{% endblock %}
+
+{% block content %}
+
+<style>
+.login-page {
+    min-height: 75vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 15px;
+    background: #f5f2df;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 850px;
+    display: flex;
+    flex-wrap: wrap;
+    background: #fffdf3;
+    border: 3px solid #536b43;
+    border-radius: 25px;
+    overflow: hidden;
+    box-shadow: 8px 8px 0px #c4c99e;
+}
+
+.tree-side {
+    flex: 1;
+    min-width: 260px;
+    background: #dce8c8;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 35px 20px;
+    text-align: center;
+}
+
+.tree-picture {
+    font-size: 110px;
+    line-height: 1.4;
+}
+
+.tree-side p {
+    color: #536b43;
+    font-family: Georgia, serif;
+    font-style: italic;
+    font-size: 17px;
+}
+
+.form-side {
+    flex: 1;
+    min-width: 260px;
+    padding: 40px 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.form-side h1 {
+    color: #405b35;
+    font-family: Georgia, serif;
+    font-size: 32px;
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.form-subtitle {
+    text-align: center;
+    color: #777;
+    margin-bottom: 25px;
+}
+
+.form-side label {
+    display: block;
+    color: #405b35;
+    font-weight: bold;
+    margin: 14px 0 7px;
+}
+
+.form-side input,
+.form-side select {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #c4d1ad;
+    border-radius: 12px;
+    background: #fffef8;
+    font-size: 15px;
+    box-sizing: border-box;
+}
+
+.form-side input:focus,
+.form-side select:focus {
+    outline: none;
+    border-color: #66864d;
+}
+
+.login-button {
+    width: 100%;
+    margin-top: 25px;
+    padding: 14px;
+    border: none;
+    border-radius: 30px;
+    background: #66864d;
+    color: white;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.login-button:hover {
+    background: #496b38;
+    transform: translateY(-2px);
+}
+
+.login-note {
+    text-align: center;
+    color: #888;
+    font-size: 12px;
+    margin-top: 20px;
+}
+
+@media (max-width: 600px) {
+    .tree-picture {
+        font-size: 75px;
+    }
+
+    .form-side {
+        padding: 30px 22px;
+    }
+}
+</style>
+
+<div class="login-page">
+    <div class="login-card">
+
+        <div class="tree-side">
+            <div class="tree-picture">🌳</div>
+            <h2 style="color:#405b35; font-family:Georgia,serif;">
+                TreeQuest
+            </h2>
+            <p>Every little action helps our planet grow.</p>
+            <div style="font-size:25px;">🌼 🍃 🌷</div>
+        </div>
+
+        <div class="form-side">
+            <h1>Welcome!</h1>
+            <p class="form-subtitle">
+                Let's make the world a little greener.
+            </p>
+
+            <form method="post" class="stack">
+
+                <label>Your player name</label>
+                <input
+                    name="username"
+                    placeholder="Example: Alex"
+                    value="Player"
+                >
+
+                <label>Open prototype as</label>
+                <select name="role">
+                    <option value="player">Player</option>
+                    <option value="organization">Partner organization</option>
+                </select>
+
+                <button class="login-button" type="submit">
+                    Enter TreeQuest 🌱
+                </button>
+
+            </form>
+
+            <p class="login-note">
+                This demo uses role selection instead of real accounts or passwords.
+            </p>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
