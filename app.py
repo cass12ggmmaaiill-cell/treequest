@@ -14,7 +14,10 @@ UPLOAD_DIR = BASE_DIR / "static" / "uploads"
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 app = Flask(__name__)
-app.secret_key = "change-this-secret-key-for-a-real-deployment"
+app.secret_key = os.environ.get(
+    "SECRET_KEY",
+    "treequest-development-key"
+)
 app.config["UPLOAD_FOLDER"] = str(UPLOAD_DIR)
 app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024
 
@@ -68,6 +71,10 @@ def init_db():
             "INSERT OR IGNORE INTO players (username, points) VALUES (?, ?)",
             ("Player", 0)
         )
+
+
+# IMPORTANT: Initialize database when Render imports this file.
+init_db()
 
 
 def login_required(role=None):
@@ -359,5 +366,5 @@ def too_large(_error):
 
 
 if __name__ == "__main__":
-    init_db()
     app.run(debug=True)
+
